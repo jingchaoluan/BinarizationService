@@ -7,9 +7,12 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import render
 from wsgiref.util import FileWrapper
-from .binarization import binarization_exec, del_service_files
+from .binarization import resize_image, binarization_exec, del_service_files
 import sys, os, os.path, zipfile, StringIO
 
+# Set encoding
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 # Get the directory which stores all input and output files
 dataDir = settings.MEDIA_ROOT
@@ -26,11 +29,35 @@ def binarizationView(request, format=None):
     if len(keys)<1:
 	return HttpResponse("Please selecting at least one image.")
     imagenames = []
-    for index, key in enumerate(keys):
+    '''
+    # Only one file/value in each field
+    for key in keys:
 	uploadedimage = request.data.get(key)
-	imagenames.append(str(uploadedimage))
-    	default_storage.save(dataDir+"/"+imagenames[index], uploadedimage)
-	
+	#print("INFO: ", "length %d" % (len(uploadedimage)))
+	image_str = str(uploadedimage)
+	imagenames.append(image_str)
+    	default_storage.save(dataDir+"/"+image_str, uploadedimage)
+
+    '''
+    # One or multiple files/values in one field
+    for key in keys:
+	uploadedimages = request.data.getlist(key)
+	print("######## %d" % len(uploadedimages))
+	if len(uploadedimages) == 1:
+	    image_str = str(uploadedimages[0])
+	    imagenames.append(image_str)
+    	    default_storage.save(dataDir+"/"+image_str, uploadedimages[0])
+	elif len(uploadedimages) > 1:
+	    for image in uploadedimages:
+		image_str = str(image)
+		imagenames.append(image_str)
+		default_storage.save(dataDir+"/"+image_str, image)
+    	
+    # Resize the image if its size smaller than 600*600
+    for imagename in imagenames:
+	imagepath = dataDir+"/"+imagename
+	resize_image(imagepath)
+
     # Call OCR binarization function
     output_files = []
     for imagename in imagenames:
@@ -60,7 +87,7 @@ def binarizationView(request, format=None):
     response["Content-Disposition"] = 'attachment; filename=%s' % zip_filename
     
     # Delete all files related to this service time
-    del_service_files(dataDir)
+    # del_service_files(dataDir)
 
     return response
 

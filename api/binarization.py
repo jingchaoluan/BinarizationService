@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from PIL import Image
+from resizeimage import resizeimage # Used for image resize
 import sys, os, os.path, subprocess, shutil
 
 # Get the directory of ocropy script
@@ -8,6 +10,24 @@ ocropyDir = settings.BASE_DIR + "/ocropy"
 # Get the directory which stores all input and output files
 dataDir = settings.MEDIA_ROOT
 
+
+# Resize the image size to meet the smallest size requirment of binarization: 600*600 pixels
+# Resize by adding a white backgroud border, but not to strech the original image
+def resize_image(imagepath):
+    fd_img = open(imagepath, 'r')
+    img = Image.open(fd_img)
+    w, h = img.size
+    if w<600 or h<600:
+	if w<600: w = 600
+	if h<600: h = 600
+	new_size = [w, h]
+	new_image = resizeimage.resize_contain(img, new_size)
+	new_image.save(imagepath, new_image.format) # override the original image
+	fd_img.close()
+    else:
+	pass
+
+
 # Execute ocr binarization script: binarize the original image
 # Parameter: the original image name
 # Return: a list conaining two files: {iamgename}.bin.png, {iamgename}.nrm.png
@@ -15,7 +35,7 @@ def binarization_exec(imagename):
 
     # Prepare path for OCR service
     inputPath = dataDir+"/"+imagename
-    image_base = imagename.split(".")[0]
+    image_base, image_ext = os.path.splitext(imagename)
     outputfiles = []
     outputfiles.append(dataDir+"/"+image_base+".bin.png")
     outputfiles.append(dataDir+"/"+image_base+".nrm.png")
@@ -31,30 +51,6 @@ def binarization_exec(imagename):
     else:
 	sys.exit("Error: the output files do not exist.")
 
-
-'''
-# Get the directory which stores all input and output files
-srcDir = settings.BASE_DIR + "/data/input/"
-dstDir = settings.BASE_DIR + "/data/output/"
-
-# Execute ocr binarization script: binarize the original image
-# Parameter: the original image name
-# Return: a related directory named according to the image name, containing two files: 0001.bin.png, 0001.nrm.png
-def binarization_exec(imagename):
-
-    # Prepare path for OCR service
-    srcImagePath = srcDir + imagename
-    image_name, image_extension = os.path.splitext(imagename)
-    outputDir = dstDir + image_name
-    
-    # Call binarization script
-    binarize_cmd = ocropyDir + "/ocropus-nlbin -n " + srcImagePath + " -o " + outputDir
-    r_binarize = subprocess.call([binarize_cmd], shell=True)
-    if r_binarize != 0:
-        sys.exit("Error: Binarization process failed")
-
-    return outputDir
-'''
 
 # Delete all files related to this service time, including inputs and outputs
 def del_service_files(dataDir):
