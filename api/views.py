@@ -87,7 +87,7 @@ def binarizationView(request, format=None):
     response["Content-Disposition"] = 'attachment; filename=%s' % zip_filename
     
     # Delete all files related to this service time
-    # del_service_files(dataDir)
+    del_service_files(dataDir)
 
     return response
 
