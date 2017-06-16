@@ -33,7 +33,6 @@ def binarizationView(request, format=None):
     # Only one file/value in each field
     for key in keys:
 	uploadedimage = request.data.get(key)
-	#print("INFO: ", "length %d" % (len(uploadedimage)))
 	image_str = str(uploadedimage)
 	imagenames.append(image_str)
     	default_storage.save(dataDir+"/"+image_str, uploadedimage)
