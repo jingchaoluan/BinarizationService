@@ -72,7 +72,7 @@ def binarizationView(request, format=None):
     
     ### Generate return file ###
     # Return multiple files in zip type.
-    zip_subdir = "output_of_binarization"
+    zip_subdir = "output_binarization"
     zip_filename = "%s.zip" % zip_subdir
     # Open StringIO to grab in-memory ZIP contents
     strio = StringIO.StringIO()
