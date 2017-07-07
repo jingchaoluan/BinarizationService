@@ -41,8 +41,9 @@ args = {
 def binarization_exec(images, parameters):
     # Update parameters values customed by user
     args.update(parameters)
-    print("==========")
+    print("=====Parameters Values =====")
     print(args)
+    print("============================")
     
     if len(images)<1:
         sys.exit(0)
