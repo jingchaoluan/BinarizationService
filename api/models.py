@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 from django.db import models
 from .validators import validate_image_extension
 
+
+### The parameters that can be set by an service API call
 class Parameters(models.Model):
 	#image = models.ImageField(upload_to='', null=True, validators=[validate_image_extension])
-	### The following 10 parameters can be overwritten by users
 	threshold = models.FloatField(default=0.5, help_text="threshold determines lightness")
 	zoom = models.FloatField(default=0.5, help_text="zoom for page background estimation")
 	escale = models.FloatField(default=1.0, help_text="scale for estimating a mask over the text region")
@@ -17,11 +18,6 @@ class Parameters(models.Model):
 	lo = models.FloatField(default=5.0, help_text="percentile for black estimation")
 	hi = models.FloatField(default=90.0, help_text="percentile for white estimation")
 	skewsteps = models.IntegerField(default=8, help_text="steps for skew angle estimation (per degree)")
-
-	### The following parameters needn't be overwritten by users
-	nocheck = models.BooleanField(default=True, help_text="disable error checking on inputs")
-	parallel = models.IntegerField(default=0, help_text="number of parallel processes to use")
-
 
 '''
 class ParameterImage(models.Model):
