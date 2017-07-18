@@ -64,8 +64,8 @@ def binarization_exec(images, parameters):
 
     if args['parallel']<2:
         for i,f in enumerate(images):
-            output_list = process((f,i+1))
-            output_files = output_files + output_list
+            output_file = process((f,i+1))
+            output_files.append(output_file)
     else:
         pool = multiprocessing.Pool(processes=args['parallel'])
         jobs = []
@@ -183,8 +183,9 @@ def process(job):
     if args['parallel']<2: print_info("writing")
     base,_ = ocrolib.allsplitext(fname)
     outputfile_bin = base+".bin.png"
-    outputfile_nrm = base+".nrm.png"
-    output_files = [outputfile_bin, outputfile_nrm]
+    #outputfile_nrm = base+".nrm.png"
+    #output_files = [outputfile_bin, outputfile_nrm]
     ocrolib.write_image_binary(outputfile_bin, bin)
-    ocrolib.write_image_gray(outputfile_nrm, flat)
-    return output_files
+    #ocrolib.write_image_gray(outputfile_nrm, flat)
+    #return output_files
+    return outputfile_bin
