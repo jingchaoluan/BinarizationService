@@ -17,9 +17,10 @@ This is a compute-intensive binarization method that works on degraded
 and historical book pages.
 """
 
-# The default parameters values
-# Users can custom the first 10 parameters
-args = {
+
+# 'args_default' is a constant dictionary, only store the defalut parameter values.
+# Using its deplicated variable 'args' to store the updated parameter values
+args_default = {
 ### The following parameters can be overwritten by users
 'threshold':0.5, # threshold, determines lightness
 'zoom':0.5,      # zoom for page background estimation
@@ -31,15 +32,22 @@ args = {
 'lo':5.0,        # percentile for black estimation
 'hi':90.0,       # percentile for white estimation
 'skewsteps':8,   # steps for skew angle estimation (per degree)
+'parallel':0,    # number of parallel CPUs to use
 
 ### The following parameters needn't be overwritten by users
-'nocheck':True,  # disable error checking on inputs
-'parallel':0     # number of parallel processes to use
+'nocheck':True  # disable error checking on inputs
 }
+
+# The global variable
+# Users can custom the first 10 parameters as above
+args = {}
 
 # The entry of binarization service
 def binarization_exec(images, parameters):
     # Update parameters values customed by user
+    # Each time update the args with the default args dictionary, avoid the effect of the previous update
+    global args
+    args = args_default.copy()
     args.update(parameters)
     print("=====Parameters Values =====")
     print(args)
