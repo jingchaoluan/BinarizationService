@@ -19,6 +19,7 @@ class Parameters(models.Model):
 	hi = models.FloatField(default=90.0, help_text="percentile for white estimation")
 	skewsteps = models.IntegerField(default=8, help_text="steps for skew angle estimation (per degree)")
 
+	parallel = models.IntegerField(default=0, help_text="number of parallel CPUs to use")
 '''
 class ParameterImage(models.Model):
 	parameters = models.ForeignKey(Parameters, related_name='images')
